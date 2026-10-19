@@ -2375,3 +2375,10 @@ dashboard:
     username: admin
     password_hash: ""  # généré par `hermes dashboard` — ne pas commiter
     secret: ""  # idem
+
+# Serveurs MCP — les secrets restent dans .env, référencés par ${VAR}.
+mcp_servers:
+  brevo:
+    url: "https://mcp.brevo.com/v1/brevo/mcp"
+    headers:
+      Authorization: "Bearer ${BREVO_MCP_TOKEN}"
