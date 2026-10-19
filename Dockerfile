@@ -22,3 +22,15 @@ RUN curl -fsSL -o /tmp/gh.tar.gz \
     && tar -xzf /tmp/gh.tar.gz -C /tmp \
     && install -m 0755 "/tmp/gh_${GH_VERSION}_linux_amd64/bin/gh" /usr/local/bin/gh \
     && rm -rf /tmp/gh.tar.gz "/tmp/gh_${GH_VERSION}_linux_amd64"
+
+# tmux : requis par le skill claude-code pour piloter les sessions interactives.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tmux \
+    && rm -rf /var/lib/apt/lists/*
+
+# Claude Code, version figée. La mise à jour se fait en changeant la version ici
+# (l'auto-updater est coupé dans docker-compose.yml). Connexion conservée dans
+# /opt/data/.claude, le HOME de l'utilisateur hermes.
+ARG CLAUDE_CODE_VERSION=2.1.303
+RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
+    && npm cache clean --force

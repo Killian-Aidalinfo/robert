@@ -23,6 +23,8 @@ services:
       - HERMES_DASHBOARD=1
       # Connexion `gh auth login` conservée dans le volume, pas dans la couche du conteneur.
       - GH_CONFIG_DIR=/opt/data/gh
+      # Claude Code est figé dans l'image : pas de mise à jour automatique.
+      - DISABLE_AUTOUPDATER=1
     ports:
       - "127.0.0.1:9119:9119"
 
