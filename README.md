@@ -8,10 +8,33 @@ Agent IA de démonstration pour les étudiants MAALSI du CESI Nancy. Robert est 
 |---|---|
 | `config/SOUL.md` | Personnalité de Robert, injectée en tête du prompt système |
 | `config/config.example.yaml` | `config.yaml` de Hermes, secrets retirés |
-| `docker-compose.yml` | Conteneur `robert` (image officielle Hermes, version figée) |
+| `config/hindsight.example.json` | Branchement de Robert sur Hindsight, à copier dans `data/hindsight/config.json` |
+| `config/hindsight.env.example` | Clés de Hindsight, à copier dans `hindsight/.env` |
+| `docker-compose.yml` | Conteneurs `robert` (Hermes) et `robert-hindsight` (mémoire), versions figées |
 | `.env.example` | Variables secrètes attendues dans `data/.env` |
 
-Les secrets (`data/.env`, `data/auth.json`, mot de passe du dashboard) ne sont jamais dans ce dépôt.
+Les secrets (`data/.env`, `data/auth.json`, `hindsight/`, mot de passe du dashboard) ne sont jamais dans ce dépôt.
+
+## Mémoire (Hindsight)
+
+Robert retient les faits de ses conversations dans [Hindsight](https://hindsight.vectorize.io), auto-hébergé dans le conteneur `robert-hindsight` (banque `robert`). Hindsight extrait les faits avec `gpt-5.6-luna` via l'abonnement ChatGPT, sur une connexion Codex dédiée stockée dans `hindsight/codex/`, distincte de celle de Robert pour qu'ils ne se déconnectent pas mutuellement.
+
+Mise en place, après le déploiement de Robert :
+
+```sh
+mkdir -p hindsight/codex && chown 1000:1000 hindsight/codex
+cp config/hindsight.env.example hindsight/.env    # puis remplir les clés
+docker run --rm -it --user 1000:1000 -e HOME=/tmp -e CODEX_HOME=/codex \
+  -v "$PWD/hindsight/codex:/codex" node:22 npx -y @openai/codex login --device-auth
+mkdir -p data/hindsight && cp config/hindsight.example.json data/hindsight/config.json   # y mettre la clé API
+chown -R 10000:10000 data/hindsight
+docker compose up -d
+docker exec robert hermes config set memory.provider hindsight
+docker exec robert hermes plugins install hindsight --yes-deps
+docker compose restart robert
+```
+
+L'interface web (le « cerveau » de Robert) écoute sur `127.0.0.1:9999` : `ssh -L 9999:localhost:9999 root@<serveur>` puis http://localhost:9999, avec le mot de passe `HINDSIGHT_CP_ACCESS_KEY`.
 
 ## Déploiement
 
