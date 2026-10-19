@@ -33,4 +33,5 @@ RUN apt-get update \
 # /opt/data/.claude, le HOME de l'utilisateur hermes.
 ARG CLAUDE_CODE_VERSION=2.1.303
 RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
+    && ln -sf "$(npm prefix -g)/bin/claude" /usr/local/bin/claude \
     && npm cache clean --force
