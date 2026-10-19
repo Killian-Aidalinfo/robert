@@ -2380,5 +2380,6 @@ dashboard:
 mcp_servers:
   brevo:
     url: "https://mcp.brevo.com/v1/brevo/mcp"
+    connect_timeout: 180  # tools/list (~280 outils) peut dépasser les 60 s par défaut
     headers:
       Authorization: "Bearer ${BREVO_MCP_TOKEN}"
