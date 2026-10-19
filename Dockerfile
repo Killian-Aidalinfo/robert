@@ -11,3 +11,14 @@ RUN curl -fsSL -o /usr/local/bin/scw \
       "https://github.com/scaleway/scaleway-cli/releases/download/v${SCW_VERSION}/scaleway-cli_${SCW_VERSION}_linux_amd64" \
     && echo "${SCW_SHA256}  /usr/local/bin/scw" | sha256sum -c - \
     && chmod 0755 /usr/local/bin/scw
+
+# CLI GitHub (gh) — archive officielle, vérifiée par son SHA256.
+# Authentification par la variable GH_TOKEN du .env, utilisée par les skills github/* de Hermes.
+ARG GH_VERSION=2.102.0
+ARG GH_SHA256=bb766f710eef8ede859c18578c72c327597cd4c8a85b06001b1f3843c6019386
+RUN curl -fsSL -o /tmp/gh.tar.gz \
+      "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" \
+    && echo "${GH_SHA256}  /tmp/gh.tar.gz" | sha256sum -c - \
+    && tar -xzf /tmp/gh.tar.gz -C /tmp \
+    && install -m 0755 "/tmp/gh_${GH_VERSION}_linux_amd64/bin/gh" /usr/local/bin/gh \
+    && rm -rf /tmp/gh.tar.gz "/tmp/gh_${GH_VERSION}_linux_amd64"
