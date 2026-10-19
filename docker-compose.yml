@@ -21,6 +21,8 @@ services:
       # Dashboard supervisé dans le même conteneur, protégé par le basic_auth
       # de config.yaml et publié uniquement sur le loopback de l'hôte.
       - HERMES_DASHBOARD=1
+      # Connexion `gh auth login` conservée dans le volume, pas dans la couche du conteneur.
+      - GH_CONFIG_DIR=/opt/data/gh
     ports:
       - "127.0.0.1:9119:9119"
 
