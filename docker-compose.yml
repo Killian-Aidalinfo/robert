@@ -9,6 +9,8 @@ services:
     container_name: robert
     restart: unless-stopped
     command: ["gateway", "run"]
+    depends_on:
+      - hindsight
     volumes:
       - ./data:/opt/data
     environment:
@@ -19,3 +21,28 @@ services:
       - HERMES_DASHBOARD=1
     ports:
       - "127.0.0.1:9119:9119"
+
+  # Mémoire long terme de Robert (provider `hindsight` de Hermes, mode local_external).
+  hindsight:
+    image: ghcr.io/vectorize-io/hindsight:1.0.0@sha256:a88678c038b0e4340822b02a5efc566c56d8176b5bffa731bc433fd37f978e4c
+    container_name: robert-hindsight
+    restart: unless-stopped
+    shm_size: 1g
+    env_file: ./hindsight/.env
+    environment:
+      - HINDSIGHT_API_WORKER_ID=robert-hindsight
+      # Extraction des faits via l'abonnement ChatGPT, avec une connexion Codex
+      # dédiée (./hindsight/codex), distincte de celle de Robert.
+      - HINDSIGHT_API_LLM_PROVIDER=openai-codex
+      - HINDSIGHT_API_LLM_MODEL=gpt-5.4-mini
+      # Seuls les clients munis de HINDSIGHT_API_TENANT_API_KEY (dans .env) passent.
+      - HINDSIGHT_API_TENANT_EXTENSION=hindsight_api.extensions.builtin.tenant:ApiKeyTenantExtension
+    volumes:
+      - hindsight-pg:/home/hindsight/.pg0
+      - ./hindsight/codex:/home/hindsight/.codex
+    ports:
+      # Interface web (control plane), à ouvrir par tunnel SSH.
+      - "127.0.0.1:9999:9999"
+
+volumes:
+  hindsight-pg:

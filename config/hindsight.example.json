@@ -1,0 +1,6 @@
+{
+  "mode": "local_external",
+  "api_url": "http://hindsight:8888",
+  "api_key": "<HINDSIGHT_API_TENANT_API_KEY de hindsight/.env>",
+  "bank_id": "robert"
+}
