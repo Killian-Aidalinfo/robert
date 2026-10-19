@@ -62,3 +62,18 @@ cp config/SOUL.md data/SOUL.md                    # après une modif de la perso
 Un changement de `SOUL.md` s'applique à la prochaine session (`/new` sur Discord), sans redémarrage.
 
 Le dashboard écoute sur `127.0.0.1:9119` de l'hôte. Pour y accéder : `ssh -L 9119:localhost:9119 root@<serveur>` puis http://localhost:9119.
+
+## Outils CLI (gh, scw, Claude Code)
+
+L'image `robert:local` (voir `Dockerfile`) ajoute `scw`, `gh`, `tmux` et Claude Code à l'image Hermes. Les connexions se font une fois et restent dans `data/` :
+
+```sh
+docker exec -u hermes -it robert gh auth login --web && docker exec -u hermes robert gh auth setup-git
+docker exec -u hermes -it robert claude auth login
+```
+
+Attention : le terminal de Robert utilise `HOME=/opt/data/home`, alors que `docker exec -u hermes` utilise `HOME=/opt/data`. Pour que les deux partagent les mêmes connexions, `data/home/` contient des liens :
+
+```sh
+cd data/home && ln -s ../.claude .claude && ln -s ../.claude.json .claude.json && ln -s ../.gitconfig .gitconfig
+```
