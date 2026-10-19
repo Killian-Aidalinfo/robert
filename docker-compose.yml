@@ -1,0 +1,21 @@
+# Robert — agent de démonstration MAALSI (CESI Nancy), basé sur Hermes Agent.
+#
+# Toutes les données de l'agent (config, .env, auth, sessions, mémoire, skills)
+# vivent dans ./data, monté sur /opt/data. Ce dossier n'est jamais commité.
+
+services:
+  robert:
+    image: nousresearch/hermes-agent:v0.22.2@sha256:36099926da316742423544e055d4734777105ffe6341873af5459b957d0c2919
+    container_name: robert
+    restart: unless-stopped
+    command: ["gateway", "run"]
+    volumes:
+      - ./data:/opt/data
+    environment:
+      - HERMES_UID=10000
+      - HERMES_GID=10000
+      # Dashboard supervisé dans le même conteneur, protégé par le basic_auth
+      # de config.yaml et publié uniquement sur le loopback de l'hôte.
+      - HERMES_DASHBOARD=1
+    ports:
+      - "127.0.0.1:9119:9119"
