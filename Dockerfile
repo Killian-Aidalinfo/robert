@@ -32,6 +32,8 @@ RUN apt-get update \
 # (l'auto-updater est coupé dans docker-compose.yml). Connexion conservée dans
 # /opt/data/.claude, le HOME de l'utilisateur hermes.
 ARG CLAUDE_CODE_VERSION=2.1.303
+# npm 12 n'exécute pas le postinstall qui place le binaire natif : on le lance nous-mêmes.
 RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
+    && node "$(npm prefix -g)/lib/node_modules/@anthropic-ai/claude-code/install.cjs" \
     && ln -sf "$(npm prefix -g)/bin/claude" /usr/local/bin/claude \
     && npm cache clean --force
