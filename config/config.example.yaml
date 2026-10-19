@@ -2383,3 +2383,8 @@ mcp_servers:
     connect_timeout: 180  # tools/list (~280 outils) peut dépasser les 60 s par défaut
     headers:
       Authorization: "Bearer ${BREVO_MCP_TOKEN}"
+  github:
+    url: "https://api.githubcopilot.com/mcp/"
+    enabled: false  # passer à true une fois GITHUB_MCP_TOKEN renseigné dans .env
+    headers:
+      Authorization: "Bearer ${GITHUB_MCP_TOKEN}"
